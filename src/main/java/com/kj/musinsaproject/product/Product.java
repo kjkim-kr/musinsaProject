@@ -1,5 +1,6 @@
 package com.kj.musinsaproject.product;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kj.musinsaproject.brand.Brand;
 import com.kj.musinsaproject.category.Category;
 import jakarta.persistence.*;
@@ -24,11 +25,14 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime addDate;
 
     @PrePersist
