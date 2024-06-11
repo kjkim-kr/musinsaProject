@@ -27,7 +27,7 @@ public class BrandController {
         }
     }
 
-    @DeleteMapping("/delete_test/{name}")
+    @DeleteMapping("/delete/{name}")
     public String deleteBrandByName(@PathVariable("name") String name) {
         boolean isDeleted = brandService.deleteByName(name);
 
@@ -36,7 +36,7 @@ public class BrandController {
                 : JsonGenerator.getErrorJsonResponse(ErrorCode.DELETE_FAILED);
     }
 
-    @PutMapping("/update_test/{name}")
+    @PutMapping("/update/{name}")
     public String updateBrandByName(@PathVariable("name") String name,
                                     @RequestBody Brand newBrand) {
         try {
