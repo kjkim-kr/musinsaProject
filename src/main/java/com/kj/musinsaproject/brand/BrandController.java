@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 
 @RequestMapping("api/brand")
 @RequiredArgsConstructor
@@ -27,20 +29,24 @@ public class BrandController {
         }
     }
 
-    @DeleteMapping("/delete/{name}")
-    public String deleteBrandByName(@PathVariable("name") String name) {
-        boolean isDeleted = brandService.deleteByName(name);
+    @DeleteMapping("/delete")
+    public String deleteBrandByName(@RequestBody Brand brand) {
+        if (brand.getName() == null)
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, brand);
+
+        boolean isDeleted = brandService.deleteByName(brand.getName());
 
         return (isDeleted)?
                 JsonGenerator.getSuccessJsonResponse()
                 : JsonGenerator.getErrorJsonResponse(ErrorCode.DELETE_FAILED);
     }
 
-    @PutMapping("/update/{name}")
-    public String updateBrandByName(@PathVariable("name") String name,
-                                    @RequestBody Brand newBrand) {
+    @PutMapping("/update/{id}")
+    public String updateBrandByName(
+            @PathVariable long id,
+            @RequestBody Brand newBrand) {
         try {
-            Brand updatedBrand = brandService.updateBrandByName(name, newBrand);
+            Brand updatedBrand = brandService.updateBrandById(id, newBrand);
             return JsonGenerator.getSuccessJsonResponse(updatedBrand);
         }
         catch(DataIntegrityViolationException dataIntegrityViolationException) {
@@ -55,5 +61,20 @@ public class BrandController {
             // 바꾸려는 데이터가 없을 경우
             return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND, newBrand);
         }
+    }
+
+    @GetMapping("/list/all")
+    public String getAllBrands() {
+        return JsonGenerator.getSuccessJsonResponse(brandService.findAll());
+    }
+    @PostMapping("/list")
+    public String findBrandByName(@RequestBody Brand brand) {
+        if (brand.getName() == null)
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, brand);
+
+        Optional<Brand> findBrand = brandService.findByName(brand.getName());
+        return (findBrand.isPresent())?
+                JsonGenerator.getSuccessJsonResponse(findBrand.get())
+                : JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
     }
 }

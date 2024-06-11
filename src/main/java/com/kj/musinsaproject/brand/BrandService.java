@@ -35,6 +35,16 @@ public class BrandService {
                 .orElseThrow(() -> new RuntimeException("Brand not found"));
     }
 
+    @Transactional
+    public Brand updateBrandById(long id, Brand brand) {
+        return brandRepository.findById(id)
+                .map(oldBrand -> {
+                    oldBrand.setName(brand.getName());
+                    return brandRepository.save(oldBrand);
+                })
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
+    }
+
     public Optional<Brand> findByName(String name) {
         return brandRepository.findByName(name);
     }
