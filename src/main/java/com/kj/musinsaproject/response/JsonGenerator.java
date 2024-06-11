@@ -2,6 +2,7 @@ package com.kj.musinsaproject.response;
 
 import com.google.gson.*;
 import com.kj.musinsaproject.brand.Brand;
+import com.kj.musinsaproject.category.Category;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -55,7 +56,10 @@ public class JsonGenerator {
                     case INVALID_ARGUMENT -> "invalid argument";
                     case DATA_NOT_FOUND -> "data not found";
 
-                    case BRAND_NAME_IS_DUPLICATED -> String.format("%s is duplicated", ((Brand) obj).getName());
+                    case BRAND_NAME_IS_DUPLICATED ->
+                            String.format("%s is duplicated", ((Brand) obj).getName());
+                    case CATEGORY_NAME_IS_DUPLICATED ->
+                            String.format("%s is duplicated", ((Category) obj).getName());
                 }
         );
 

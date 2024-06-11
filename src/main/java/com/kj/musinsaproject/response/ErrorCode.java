@@ -9,6 +9,8 @@ public enum ErrorCode {
     DELETE_FAILED(12),
     DATA_NOT_FOUND(13),
     BRAND_NAME_IS_DUPLICATED(100),
+    CATEGORY_NAME_IS_DUPLICATED(200),
+
     ;
 
     private final int value;
