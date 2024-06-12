@@ -23,16 +23,16 @@ public class BrandController {
         }
         catch(DataIntegrityViolationException dataIntegrityViolationException) {
             if(brand.getName() == null)
-                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, brand);
+                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.BRAND_NAME_IS_DUPLICATED, brand);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNIQUE_KEY_VIOLATION);
         }
     }
 
     @DeleteMapping("/delete")
     public String deleteBrandByName(@RequestBody Brand brand) {
         if (brand.getName() == null)
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, brand);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
         boolean isDeleted = brandService.deleteByName(brand.getName());
 
@@ -52,14 +52,14 @@ public class BrandController {
         catch(DataIntegrityViolationException dataIntegrityViolationException) {
             // 바꾸려는 이름이 이미 있는 경우 + 이름이 null 일 경우
             if(newBrand.getName() == null)
-                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, newBrand);
+                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.BRAND_NAME_IS_DUPLICATED, newBrand);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNIQUE_KEY_VIOLATION);
         }
         catch(RuntimeException runtimeException){
             // name != empty
             // 바꾸려는 데이터가 없을 경우
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND, newBrand);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
         }
     }
 
@@ -70,7 +70,7 @@ public class BrandController {
     @PostMapping("/list")
     public String findBrandByName(@RequestBody Brand brand) {
         if (brand.getName() == null)
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, brand);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
         Optional<Brand> findBrand = brandService.findByName(brand.getName());
         return (findBrand.isPresent())?

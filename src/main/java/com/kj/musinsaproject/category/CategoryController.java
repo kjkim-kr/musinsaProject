@@ -22,9 +22,9 @@ public class CategoryController {
         }
         catch(DataIntegrityViolationException dataIntegrityViolationException) {
             if(category.getName() == null)
-                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, category);
+                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.CATEGORY_NAME_IS_DUPLICATED, category);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNIQUE_KEY_VIOLATION);
         }
     }
 
@@ -35,7 +35,7 @@ public class CategoryController {
     @PostMapping("/list")
     public String findCategoryByName(@RequestBody Category category) {
         if (category.getName() == null)
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, category);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
         Optional<Category> foundCategory = categoryService.findByName(category.getName());
         return (foundCategory.isPresent())?
@@ -46,7 +46,7 @@ public class CategoryController {
     @DeleteMapping("/delete")
     public String deleteBrandByName(@RequestBody Category category) {
         if (category.getName() == null)
-            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE, category);
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
         boolean isDeleted = categoryService.deleteByName(category.getName());
 
