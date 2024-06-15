@@ -41,8 +41,8 @@ public class ProductService {
                 .map(oldProduct -> {
 
                     // 이름, 가격만 수정 가능하도록 함
-                    oldProduct.setName(product.getName());
-                    oldProduct.setPrice(product.getPrice());
+                    if(product.getName() != null) oldProduct.setName(product.getName());
+                    if(product.getPrice() != null) oldProduct.setPrice(product.getPrice());
 
                     return productRepository.save(oldProduct);
                 })
