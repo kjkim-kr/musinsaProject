@@ -34,9 +34,9 @@ public class JsonGenerator {
 
         jsonObject.addProperty("status", 200);
         jsonObject.addProperty("message", "success");
-        if(obj != null)
-           jsonObject.addProperty("data", gson.toJson(obj));
-
+        if(obj != null) {
+            jsonObject.add("data", gson.toJsonTree(obj).getAsJsonObject());
+        }
         return jsonObject.toString();
     }
 
