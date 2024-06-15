@@ -1,5 +1,7 @@
 package com.kj.musinsaproject.product;
 
+import com.kj.musinsaproject.brand.BrandRepository;
+import com.kj.musinsaproject.category.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -13,6 +15,8 @@ import java.util.Optional;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public Product create(Product product) {
@@ -57,5 +61,17 @@ public class ProductService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("addDate"));
         return productRepository.findAll(Sort.by(sorts));
+    }
+
+    public List<Product> findByCategoryName(String categoryName) {
+        return categoryRepository.findByName(categoryName)
+                .map(category -> productRepository.findByCategoryId(category.getId()))
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+    }
+
+    public List<Product> findByBrandName(String brandName) {
+        return brandRepository.findByName(brandName)
+                .map(brand -> productRepository.findByBrandId(brand.getId()))
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
     }
 }

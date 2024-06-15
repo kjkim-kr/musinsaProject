@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequestMapping("api/product")
@@ -89,5 +90,29 @@ public class ProductController {
         return (foundProduct.isPresent())?
                 JsonGenerator.getSuccessJsonResponse(foundProduct.get())
                 : JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
+    }
+
+    @GetMapping("/list/category/{name}")
+    public String getProductsByCategory(@PathVariable String name) {
+        List<Product> productList = productService.findByCategoryName(name);
+
+        // 최저가, 최고가 리스트 필터링
+        List<SimpleProductByCategory> minProducts = getFilteredProducts(
+                productList,
+                productList.stream().mapToInt(Product::getPrice).min().orElseThrow(RuntimeException::new)
+        );
+        List<SimpleProductByCategory> maxProducts = getFilteredProducts(
+                productList,
+                productList.stream().mapToInt(Product::getPrice).max().orElseThrow(RuntimeException::new)
+        );
+
+        return JsonGenerator.getMinMaxProductJsonResponse(name, minProducts, maxProducts);
+    }
+
+    private List<SimpleProductByCategory> getFilteredProducts(List<Product> productList, int price) {
+        return productList.stream()
+                .filter(p -> p.getPrice() == price)
+                .map(SimpleProductByCategory::new)
+                .toList();
     }
 }

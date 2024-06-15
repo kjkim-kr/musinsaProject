@@ -1,11 +1,15 @@
 package com.kj.musinsaproject.response;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.kj.musinsaproject.product.SimpleProductByCategory;
 
 import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 public class JsonGenerator {
@@ -22,6 +26,7 @@ public class JsonGenerator {
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
         gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateDeserializer());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
+        gsonBuilder.registerTypeAdapter(SimpleProductByCategory.class, new SimpleProductByCategorySerializer());
 
         gson = gsonBuilder.setPrettyPrinting().create();
     }
@@ -56,6 +61,20 @@ public class JsonGenerator {
                     case INTERNAL_SERVER_ERROR -> "internal server error";
                 }
         );
+
+        return jsonObject.toString();
+    }
+
+    public static String getMinMaxProductJsonResponse(String categoryName,
+                                                      List<SimpleProductByCategory> minProduct,
+                                                      List<SimpleProductByCategory> maxProduct) {
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("카테고리", categoryName);
+        jsonObject.add("최저가",
+                gson.toJsonTree(minProduct, new TypeToken<List<SimpleProductByCategory>>() {}.getType()));
+        jsonObject.add("최고가",
+                gson.toJsonTree(maxProduct, new TypeToken<List<SimpleProductByCategory>>() {}.getType()));
 
         return jsonObject.toString();
     }
@@ -94,5 +113,16 @@ class LocalDateTimeDeserializer implements JsonDeserializer <LocalDateTime> {
             throws JsonParseException {
         return LocalDateTime.parse(json.getAsString(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withLocale(Locale.KOREA));
+    }
+}
+
+class SimpleProductByCategorySerializer implements JsonSerializer<SimpleProductByCategory> {
+    @Override
+    public JsonElement serialize(SimpleProductByCategory src, Type typeOfSrc, JsonSerializationContext context) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("브랜드명", src.getBrandName());
+        jsonObject.addProperty("가격",
+                NumberFormat.getNumberInstance().format(src.getPrice()));
+        return jsonObject;
     }
 }
