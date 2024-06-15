@@ -6,12 +6,18 @@ import com.kj.musinsaproject.category.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Getter
 @Entity
+@ToString
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"brand_id", "category_id", "name"})
+})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +32,12 @@ public class Product {
     private Category category;
 
     @Column(nullable = false)
-    private Double price;
+    @Setter
+    private String name;
 
     @Column(nullable = false)
-    private String name;
+    @Setter
+    private Double price;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
