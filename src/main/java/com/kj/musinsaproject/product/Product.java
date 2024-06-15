@@ -37,7 +37,7 @@ public class Product {
 
     @Column(nullable = false)
     @Setter
-    private Double price;
+    private Integer price;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
