@@ -2,6 +2,7 @@ package com.kj.musinsaproject.response;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.kj.musinsaproject.product.SimpleProduct;
 import com.kj.musinsaproject.product.SimpleProductByBrand;
 import com.kj.musinsaproject.product.SimpleProductByCategory;
 
@@ -29,6 +30,7 @@ public class JsonGenerator {
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
         gsonBuilder.registerTypeAdapter(SimpleProductByCategory.class, new SimpleProductByCategorySerializer());
         gsonBuilder.registerTypeAdapter(SimpleProductByBrand.class, new SimpleProductByBrandSerializer());
+        gsonBuilder.registerTypeAdapter(SimpleProduct.class, new SimpleProductSerializer());
 
         gson = gsonBuilder.setPrettyPrinting().create();
     }
@@ -99,6 +101,18 @@ public class JsonGenerator {
         jsonObject.add("최저가", minJsonObject);
         return jsonObject.toString();
     }
+
+    public static String getMinPriceProductOverCategoryJsonResponse(List<SimpleProduct> productList) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("목록",
+                gson.toJsonTree(productList, new TypeToken<List<SimpleProduct>>() {}.getType()));
+        jsonObject.addProperty("총액",
+                NumberFormat.getNumberInstance().format(
+                        productList.stream().mapToInt(SimpleProduct::getPrice).sum()
+                )
+        );
+        return jsonObject.toString();
+    }
 }
 
 class LocalDateSerializer implements JsonSerializer <LocalDate> {
@@ -153,6 +167,18 @@ class SimpleProductByBrandSerializer implements JsonSerializer<SimpleProductByBr
     public JsonElement serialize(SimpleProductByBrand src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("카테고리", src.getCategoryName());
+        jsonObject.addProperty("가격",
+                NumberFormat.getNumberInstance().format(src.getPrice()));
+        return jsonObject;
+    }
+}
+
+class SimpleProductSerializer implements JsonSerializer<SimpleProduct> {
+    @Override
+    public JsonElement serialize(SimpleProduct src, Type typeOfSrc, JsonSerializationContext context) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("카테고리", src.getCategoryName());
+        jsonObject.addProperty("브랜드", src.getBrandName());
         jsonObject.addProperty("가격",
                 NumberFormat.getNumberInstance().format(src.getPrice()));
         return jsonObject;

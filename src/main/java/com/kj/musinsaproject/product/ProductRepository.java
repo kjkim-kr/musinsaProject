@@ -37,4 +37,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         )
         """, nativeQuery = true)
     List<Product> findByMinTotalPriceBrand();
+
+    @Query(value = """
+        SELECT p.*
+        FROM Product p
+        INNER JOIN
+        (
+            SELECT category_id, min(price) AS min_prc
+            FROM Product p
+            GROUP BY category_id
+        ) c
+        ON p.category_id=c.category_id AND p.price=c.min_prc;
+    """, nativeQuery = true)
+    List<Product> findMinPriceProductOverCategories();
 }

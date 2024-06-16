@@ -69,13 +69,11 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
     }
 
-    public List<Product> findByBrandName(String brandName) {
-        return brandRepository.findByName(brandName)
-                .map(brand -> productRepository.findByBrandId(brand.getId()))
-                .orElseThrow(() -> new RuntimeException("Brand not found"));
-    }
-
     public List<Product> findByMinTotalPriceBrand() {
         return productRepository.findByMinTotalPriceBrand();
+    }
+
+    public List<Product> findMinPriceProductOverCategories(){
+        return productRepository.findMinPriceProductOverCategories();
     }
 }
