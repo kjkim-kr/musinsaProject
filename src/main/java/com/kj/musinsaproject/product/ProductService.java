@@ -74,4 +74,8 @@ public class ProductService {
                 .map(brand -> productRepository.findByBrandId(brand.getId()))
                 .orElseThrow(() -> new RuntimeException("Brand not found"));
     }
+
+    public List<Product> findByMinTotalPriceBrand() {
+        return productRepository.findByMinTotalPriceBrand();
+    }
 }

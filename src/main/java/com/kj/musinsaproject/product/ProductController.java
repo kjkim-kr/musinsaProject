@@ -94,19 +94,23 @@ public class ProductController {
 
     @GetMapping("/list/category/{name}")
     public String getProductsByCategory(@PathVariable String name) {
-        List<Product> productList = productService.findByCategoryName(name);
+        try {
+            List<Product> productList = productService.findByCategoryName(name);
 
-        // 최저가, 최고가 리스트 필터링
-        List<SimpleProductByCategory> minProducts = getFilteredProducts(
-                productList,
-                productList.stream().mapToInt(Product::getPrice).min().orElseThrow(RuntimeException::new)
-        );
-        List<SimpleProductByCategory> maxProducts = getFilteredProducts(
-                productList,
-                productList.stream().mapToInt(Product::getPrice).max().orElseThrow(RuntimeException::new)
-        );
+            // 최저가, 최고가 리스트 필터링
+            List<SimpleProductByCategory> minProducts = getFilteredProducts(
+                    productList,
+                    productList.stream().mapToInt(Product::getPrice).min().orElseThrow(RuntimeException::new)
+            );
+            List<SimpleProductByCategory> maxProducts = getFilteredProducts(
+                    productList,
+                    productList.stream().mapToInt(Product::getPrice).max().orElseThrow(RuntimeException::new)
+            );
 
-        return JsonGenerator.getMinMaxProductJsonResponse(name, minProducts, maxProducts);
+            return JsonGenerator.getMinMaxProductJsonResponse(name, minProducts, maxProducts);
+        } catch(RuntimeException runtimeException){
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
+        }
     }
 
     private List<SimpleProductByCategory> getFilteredProducts(List<Product> productList, int price) {
@@ -114,5 +118,18 @@ public class ProductController {
                 .filter(p -> p.getPrice() == price)
                 .map(SimpleProductByCategory::new)
                 .toList();
+    }
+
+    @GetMapping("/list/min_price_brand")
+    public String getProductsByMinPrice() {
+        List<Product> minTotalPriceBrandList = productService.findByMinTotalPriceBrand();
+
+        if(minTotalPriceBrandList.isEmpty())
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
+
+        return JsonGenerator.getMinTotalPriceProductJsonResponse(
+                minTotalPriceBrandList.get(0).getBrand().getName(),
+                minTotalPriceBrandList.stream().map(SimpleProductByBrand::new).toList()
+        );
     }
 }

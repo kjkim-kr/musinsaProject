@@ -24,4 +24,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByBrandId(long brandId);
     List<Product> findByCategoryId(long categoryId);
+
+    @Query(value = """
+        SELECT p.*
+        FROM Product p
+        WHERE p.brand_id = (
+            SELECT p2.brand_id
+            FROM Product p2
+            GROUP BY p2.brand_id
+            ORDER BY SUM(p2.price)
+            LIMIT 1
+        )
+        """, nativeQuery = true)
+    List<Product> findByMinTotalPriceBrand();
 }
