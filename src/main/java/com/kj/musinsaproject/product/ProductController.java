@@ -65,14 +65,13 @@ public class ProductController {
             return JsonGenerator.getSuccessJsonResponse(updatedBrand);
         }
         catch(DataIntegrityViolationException dataIntegrityViolationException) {
-            // 바꾸려는 이름이 이미 있는 경우 + 이름이 null 일 경우
-            if(newProduct.getName() == null)
-                return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
-
-            // 그 외, PK Error
+            // 바꾸려는 이름이 이미 있는 경우 등의 PK Error
             return DataExceptionHandler.handleDataException(
                     dataIntegrityViolationException.getCause()
             );
+        }
+        catch(IllegalArgumentException illegalArgumentException) {
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
         }
         catch(RuntimeException runtimeException){
             // name != empty
