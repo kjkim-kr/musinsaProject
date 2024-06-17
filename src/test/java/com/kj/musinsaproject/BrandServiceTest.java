@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -129,5 +131,36 @@ class BrandServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> brandService.updateBrandById(addedBrandId, updatedBrand));
         assertThat(brandRepository.findAll()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("브랜드 검색 테스트(성공)")
+    void findBrandTest() {
+        var brandService = new BrandService(brandRepository);
+        var brand = new Brand();
+        brand.setName("테스트브랜드");
+        brandService.create(brand);
+
+        // Act
+        Optional<Brand> foundBrand = brandService.findByName("테스트브랜드");
+
+        // Assert
+        assertThat(foundBrand).isPresent();
+        assertThat(foundBrand.get().getName()).isEqualTo(brand.getName());
+    }
+
+    @Test
+    @DisplayName("브랜드 검색 테스트(실패 : 브랜드명 없음)")
+    void findBrandFailTest() {
+        var brandService = new BrandService(brandRepository);
+        var brand = new Brand();
+        brand.setName("테스트브랜드");
+        brandService.create(brand);
+
+        // Act
+        Optional<Brand> foundBrand = brandService.findByName("없는브랜드명");
+
+        // Assert
+        assertThat(foundBrand).isEmpty();
     }
 }
