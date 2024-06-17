@@ -26,17 +26,10 @@ public class BrandService {
     }
 
     @Transactional
-    public Brand updateBrandByName(String name, Brand brand) {
-        return brandRepository.findByName(name)
-                .map(oldBrand -> {
-                    oldBrand.setName(brand.getName());
-                    return brandRepository.save(oldBrand);
-                })
-                .orElseThrow(() -> new RuntimeException("Brand not found"));
-    }
-
-    @Transactional
     public Brand updateBrandById(long id, Brand brand) {
+        if(brand.getName() == null)
+            throw new IllegalArgumentException("Brand name cannot be null");
+
         return brandRepository.findById(id)
                 .map(oldBrand -> {
                     oldBrand.setName(brand.getName());

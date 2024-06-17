@@ -41,6 +41,10 @@ public class ProductService {
 
     @Transactional
     public Product updateProductById(long id, Product product) {
+        if (product.getName() == null && product.getPrice() == null) {
+            throw new IllegalArgumentException("Product name and price cannot be null");
+        }
+
         return productRepository.findById(id)
                 .map(oldProduct -> {
 
