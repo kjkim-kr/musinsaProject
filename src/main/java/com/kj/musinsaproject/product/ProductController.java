@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequestMapping("api/product")
 @RequiredArgsConstructor
@@ -141,18 +140,8 @@ public class ProductController {
         if(minTotalPriceBrandList.isEmpty())
             return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
 
-        // 카테고리 별 중복 제거
-        // 상의 카테고리에 ('A', 9000), ('G', 9000) 등이 등장하면, 그 중 하나만을 선택한다.
         return JsonGenerator.getMinPriceProductOverCategoryJsonResponse(
                 minTotalPriceBrandList.stream()
-                        .collect(
-                                Collectors.toMap(
-                                        Product::getCategory,
-                                        p -> p,
-                                        (existing, replace) -> replace
-                                )
-                        )
-                        .values().stream()
                         .map(SimpleProduct::new).toList()
         );
     }

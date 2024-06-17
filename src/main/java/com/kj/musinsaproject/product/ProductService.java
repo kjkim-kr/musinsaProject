@@ -1,6 +1,5 @@
 package com.kj.musinsaproject.product;
 
-import com.kj.musinsaproject.brand.BrandRepository;
 import com.kj.musinsaproject.category.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +9,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
 
     @Transactional
@@ -78,6 +77,18 @@ public class ProductService {
     }
 
     public List<Product> findMinPriceProductOverCategories(){
-        return productRepository.findMinPriceProductOverCategories();
+        // 카테고리 별 중복 제거
+        // 상의 카테고리에 ('A', 9000), ('G', 9000) 등이 등장하면, 그 중 하나만을 선택한다.
+
+        return productRepository.findMinPriceProductOverCategories()
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                Product::getCategory,
+                                p -> p,
+                                (existing, replace) -> replace
+                        )
+                )
+                .values().stream().toList();
     }
 }
