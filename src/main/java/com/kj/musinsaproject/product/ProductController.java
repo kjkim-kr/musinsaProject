@@ -36,6 +36,10 @@ public class ProductController {
     public String deleteProduct(@RequestBody Product product) {
         if (product.getName() == null)
             return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
+        if (product.getBrand() == null)
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
+        if (product.getCategory() == null)
+            return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
         boolean isDeleted = productService.deleteProduct(product);
 
