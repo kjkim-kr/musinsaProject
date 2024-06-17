@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class Category {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @Setter
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
