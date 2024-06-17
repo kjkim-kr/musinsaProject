@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kj.musinsaproject.brand.Brand;
 import com.kj.musinsaproject.category.Category;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -46,5 +43,16 @@ public class Product {
     @PrePersist
     protected void onCreate() {
         addDate = LocalDateTime.now();
+    }
+
+    @Builder
+    private Product(Long id, Brand brand, Category category,
+                    String name, Integer price, LocalDateTime addDate) {
+        this.id = id;
+        this.brand = brand;
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.addDate = addDate;
     }
 }

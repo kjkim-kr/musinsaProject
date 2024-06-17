@@ -2,10 +2,7 @@ package com.kj.musinsaproject.brand;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -29,5 +26,12 @@ public class Brand {
     @PrePersist
     protected void onCreate() {
         addDate = LocalDateTime.now();
+    }
+
+    @Builder
+    private Brand(Long id, String name, LocalDateTime addDate) {
+        this.id = id;
+        this.name = name;
+        this.addDate = addDate;
     }
 }
