@@ -21,6 +21,7 @@ public class BrandService {
 
     @Transactional
     public boolean deleteByName(String name){
+        // 삭제된 행의 개수를 받아서, 삭제 여부를 판단한다.
         long d = brandRepository.deleteByName(name);
         return d > 0;
     }
@@ -30,6 +31,8 @@ public class BrandService {
         if(brand.getName() == null)
             throw new IllegalArgumentException("Brand name cannot be null");
 
+        // 수정하려는 brand를 id로 찾아서, 이름을 수정하여 저장한다.
+        // 해당 id가 없거나, 바꾸려는 이름이 중복인 경우 에러가 발생한다.
         return brandRepository.findById(id)
                 .map(oldBrand -> {
                     oldBrand.setName(brand.getName());

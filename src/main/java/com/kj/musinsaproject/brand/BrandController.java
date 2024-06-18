@@ -22,6 +22,7 @@ public class BrandController {
             return JsonGenerator.getSuccessJsonResponse(addBrand);
         }
         catch(DataIntegrityViolationException dataIntegrityViolationException) {
+            // 브랜드 명 데이터가 없거나, 중복인 경우
             if(brand.getName() == null)
                 return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
@@ -31,6 +32,7 @@ public class BrandController {
 
     @DeleteMapping("/delete")
     public String deleteBrandByName(@RequestBody Brand brand) {
+        // 제거하고자 하는 브랜드 명 데이터가 없는 경우
         if (brand.getName() == null)
             return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 
@@ -69,6 +71,7 @@ public class BrandController {
     }
     @PostMapping("/list")
     public String findBrandByName(@RequestBody Brand brand) {
+        // 찾으려는 브랜드 명 데이터가 없는 경우
         if (brand.getName() == null)
             return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
 

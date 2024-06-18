@@ -24,6 +24,7 @@ public class ProductService {
 
     @Transactional
     public boolean deleteProduct(Product product){
+        // 삭제된 행의 개수를 받아서, 삭제 여부를 판단한다.
         int d = productRepository.deleteProduct(
                 product.getBrand().getId(),
                 product.getCategory().getId(),
@@ -34,6 +35,7 @@ public class ProductService {
 
     @Transactional
     public boolean deleteProductById(long id){
+        // 삭제된 행의 개수를 받아서, 삭제 여부를 판단한다.
         long d = productRepository.deleteProductById(id);
         return d > 0;
     }
@@ -67,6 +69,7 @@ public class ProductService {
     }
 
     public List<Product> findByCategoryName(String categoryName) {
+        // 특정 카테고리를 찾아서 같은 카테고리의 상품들을 전부 리턴한다.
         return categoryRepository.findByName(categoryName)
                 .map(category -> productRepository.findByCategoryId(category.getId()))
                 .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -77,9 +80,8 @@ public class ProductService {
     }
 
     public List<Product> findMinPriceProductOverCategories(){
-        // 카테고리 별 중복 제거
+        // 각 카테고리별 최저가를 찾는다. 최저가의 데이터는 중복일 수 있으므로 카테고리 별 중복 제거
         // 상의 카테고리에 ('A', 9000), ('G', 9000) 등이 등장하면, 그 중 하나만을 선택한다.
-
         return productRepository.findMinPriceProductOverCategories()
                 .stream()
                 .collect(

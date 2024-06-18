@@ -22,6 +22,7 @@ public class CategoryService {
 
     @Transactional
     public boolean deleteByName(String name){
+        // 삭제된 행의 개수를 받아서, 삭제 여부를 판단한다.
         long d = categoryRepository.deleteByName(name);
         return d > 0;
     }

@@ -71,6 +71,7 @@ public class ProductController {
             );
         }
         catch(IllegalArgumentException illegalArgumentException) {
+            // 바꾸려는 데이터의 name, price가 모두 없는 경우
             return JsonGenerator.getErrorJsonResponse(ErrorCode.UNEXPECTED_ATTRIBUTE);
         }
         catch(RuntimeException runtimeException){
@@ -98,9 +99,10 @@ public class ProductController {
     @GetMapping("/list/category/{name}")
     public String getProductsByCategory(@PathVariable String name) {
         try {
+            // 해당 카테고리의 데이터를 전부 가져온다.
             List<Product> productList = productService.findByCategoryName(name);
 
-            // 최저가, 최고가 리스트 필터링
+            // 최저가, 최고가에 해당하는 상품을 모은다. (중복 데이터가 있을 수 있음)
             List<SimpleProductByCategory> minProducts = getFilteredProducts(
                     productList,
                     productList.stream().mapToInt(Product::getPrice).min().orElseThrow(RuntimeException::new)
@@ -125,11 +127,13 @@ public class ProductController {
 
     @GetMapping("/list/min_price_brand")
     public String getProductsByMinPrice() {
+        // 각 브랜드의 상품의 가격 합이 최저가인 브랜드를 찾고, 해당 브랜드의 상품을 모두 가져온다.
         List<Product> minTotalPriceBrandList = productService.findByMinTotalPriceBrand();
 
         if(minTotalPriceBrandList.isEmpty())
             return JsonGenerator.getErrorJsonResponse(ErrorCode.DATA_NOT_FOUND);
 
+        // 하나의 브랜드 목록이기 때문에, 0번째 데이터의 이름을 인자로 제공
         return JsonGenerator.getMinTotalPriceProductJsonResponse(
                 minTotalPriceBrandList.get(0).getBrand().getName(),
                 minTotalPriceBrandList.stream().map(SimpleProductByBrand::new).toList()
@@ -138,6 +142,8 @@ public class ProductController {
 
     @GetMapping("/list/min_price_category")
     public String getProductsByMinPriceOverCategories() {
+        // 각 카테고리별 최저가인 상품 목록을 가져온다.
+        // 카테고리별 중복이 발생한 경우, 하나를 임의로 선택한다.
         List<Product> minTotalPriceBrandList = productService.findMinPriceProductOverCategories();
 
         if(minTotalPriceBrandList.isEmpty())
