@@ -914,15 +914,15 @@ GET `http://localhost:12012/api/product/list/all`
 
 2. **빌드**
     ```bash
-    
+    ./gradlew build
     ```
 
 3. **테스트**
     ```bash
-    
+    ./gradlew clean test
     ```
 
 4. **애플리케이션 실행**
     ```bash
-    
+    java -jar build/libs/musinsaProject-0.0.1-SNAPSHOT.jar
     ```
