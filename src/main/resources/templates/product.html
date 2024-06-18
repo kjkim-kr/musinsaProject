@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 관리 페이지</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid black;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        async function addProduct() {
+            const name = document.getElementById('productName').value;
+            const brandId = document.getElementById('productBrand').value;
+            const categoryId = document.getElementById('productCategory').value;
+            const price = document.getElementById('productPrice').value;
+
+            const productData = {
+                brand: { id: brandId },
+                category: { id: categoryId },
+                name: name,
+                price: parseInt(price)
+            };
+
+            const response = await fetch('/api/product/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            });
+
+            const result = await response.json();
+            if (result.status === 200) {
+                alert('Product added successfully!');
+                window.location.reload();
+            } else {
+                alert(`Error: ${result.errorMessage}`);
+            }
+        }
+
+        async function deleteProduct() {
+            const id = document.getElementById('productId').value;
+            const response = await fetch(`/api/product/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+            if (result.status === 200) {
+                alert('Product deleted successfully!');
+                window.location.reload();
+            } else {
+                alert(`Error: ${result.errorMessage}`);
+            }
+        }
+
+        async function updateProduct() {
+            const id = document.getElementById('productIdForUpdate').value;
+            const name = document.getElementById('productNameForUpdate').value;
+            const price = document.getElementById('productPriceForUpdate').value;
+
+            const productData = {};
+            if (name.trim() !== '') {
+                productData.name = name;
+            }
+
+            if (price.trim() !== '') {
+                productData.price = parseInt(price);  // Ensure price is sent as an integer
+            }
+
+            const response = await fetch(`/api/product/update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            });
+
+            const result = await response.json();
+            if (result.status === 200) {
+                alert('Product updated successfully!');
+                window.location.reload();
+            } else {
+                alert(`Error: ${result.errorMessage}`);
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>상품 관리</h1>
+<div>
+    <h2>상품 추가</h2>
+    <input type="text" id="productBrand" placeholder="브랜드명">
+    <input type="text" id="productCategory" placeholder="카테고리명">
+    <input type="text" id="productName" placeholder="상품명">
+    <input type="text" id="productPrice" placeholder="상품가격">
+    <button onclick="addProduct()">추가</button>
+</div>
+<div>
+    <h2>상품 삭제</h2>
+    <input type="text" id="productId" placeholder="상품 ID">
+    <button onclick="deleteProduct()">삭제</button>
+</div>
+<div>
+    <h2>상품 업데이트</h2>
+    <input type="text" id="productIdForUpdate" placeholder="상품 ID">
+    <input type="text" id="productNameForUpdate" placeholder="새 상품이름">
+    <input type="text" id="productPriceForUpdate" placeholder="새 상품가격">
+    <button onclick="updateProduct()">업데이트</button>
+</div>
+<div>
+    <h2>상품 목록</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>브랜드(ID)</th>
+            <th>카테고리(ID)</th>
+            <th>상품명</th>
+            <th>가격</th>
+            <th>생성일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}"></td>
+            <td th:text="${product.brand.name} + '(' + ${product.brand.id} + ')'"></td>
+            <td th:text="${product.category.name} + '(' + ${product.category.id} + ')'"></td>
+            <td th:text="${product.name}"></td>
+            <td th:text="${product.price}"></td>
+            <td th:text="${#dates.format(
+                #dates.create(
+                    product.addDate.year, product.addDate.monthValue, product.addDate.dayOfMonth,
+                    product.addDate.hour, product.addDate.minute, product.addDate.second)
+                    , 'yyyy-MM-dd HH:mm:ss')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

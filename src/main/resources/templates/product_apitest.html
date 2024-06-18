@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 API 테스트 페이지</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid black;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        async function getProductsByCategory() {
+            const categoryName = document.getElementById('categoryName').value;
+            const response = await fetch(`/api/product/list/category/${categoryName}`);
+            const result = await response.json();
+            handleResponse(result, 'categoryResponse');
+        }
+
+        async function getProductsByMinPriceBrand() {
+            const response = await fetch(`/api/product/list/min_price_brand`);
+            const result = await response.json();
+            handleResponse(result, 'minPriceBrandResponse');
+        }
+
+        async function getProductsByMinPriceCategory() {
+            const response = await fetch(`/api/product/list/min_price_category`);
+            const result = await response.json();
+            handleResponse(result, 'minPriceCategoryResponse');
+        }
+
+        function handleResponse(result, responseElementId) {
+            const responseElement = document.getElementById(responseElementId);
+            responseElement.innerHTML = '';
+
+            if (result.status === 200 || result.목록 || result.최저가 || result.카테고리) {
+                // 기존 검색 결과 제거
+                document.getElementById('categoryResponse').innerHTML = '';
+                document.getElementById('minPriceBrandResponse').innerHTML = '';
+                document.getElementById('minPriceCategoryResponse').innerHTML = '';
+
+                let content = '';
+                switch (responseElementId) {
+                    case 'categoryResponse':
+                        content += `<h3>카테고리: ${result.카테고리}</h3>`;
+                        content += `<h4>최저가</h4><ul>`;
+                        result.최저가.forEach(item => {
+                            content += `<li>브랜드명: ${item.브랜드명}, 가격: ${item.가격}</li>`;
+                        });
+                        content += `</ul><h4>최고가</h4><ul>`;
+                        result.최고가.forEach(item => {
+                            content += `<li>브랜드명: ${item.브랜드명}, 가격: ${item.가격}</li>`;
+                        });
+                        content += `</ul>`;
+                        break;
+                    case 'minPriceBrandResponse':
+                        content += `<h3>최저가 브랜드: ${result.최저가.브랜드}</h3>`;
+                        content += `<h4>카테고리 목록</h4><ul>`;
+                        result.최저가.카테고리.forEach(item => {
+                            content += `<li>카테고리: ${item.카테고리}, 가격: ${item.가격}</li>`;
+                        });
+                        content += `</ul><h4>총액: ${result.최저가.총액}</h4>`;
+                        break;
+                    case 'minPriceCategoryResponse':
+                        content += `
+                        <h4>카테고리별 최저가 목록</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>카테고리</th>
+                                    <th>브랜드</th>
+                                    <th>가격</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                        result.목록.forEach(item => {
+                            content += `
+                            <tr>
+                                <td>${item.카테고리}</td>
+                                <td>${item.브랜드}</td>
+                                <td>${item.가격}</td>
+                            </tr>`;
+                        });
+                        content += `
+                            <tr>
+                                <td colspan="2">총액</td>
+                                <td>${result.총액}</td>
+                            </tr>
+                            </tbody>
+                        </table>`;
+                        break;
+                }
+                responseElement.innerHTML = content;
+            } else {
+                responseElement.innerHTML = `<div>Error: ${result.errorMessage || 'Unexpected error occurred'}</div>`;
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>상품 API 테스트 페이지</h1>
+
+<div>
+    <h2>카테고리 별 최저가격 브랜드와 상품 가격, 총액 조회</h2>
+    <button onclick="getProductsByMinPriceCategory()">Get Products</button>
+</div>
+
+<div>
+    <h2>최저가격에 판매하는 브랜드와 카테고리의 상품가격, 총액을 조회</h2>
+    <button onclick="getProductsByMinPriceBrand()">Get Products</button>
+</div>
+
+<div>
+    <h2>카테고리 이름으로 최저, 최고 가격 브랜드와 상품 가격을 조회</h2>
+    <label for="categoryName">
+    </label><input type="text" id="categoryName" placeholder="카테고리명">
+    <button onclick="getProductsByCategory()">조회</button>
+</div>
+
+<hr>
+<h2>조회 결과</h2>
+<div id="categoryResponse"></div>
+<div id="minPriceBrandResponse"></div>
+<div id="minPriceCategoryResponse"></div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카테고리 관리 페이지</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid black;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        async function addCategory() {
+            const name = document.getElementById('categoryName').value;
+            const response = await fetch('/api/category/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            });
+            const result = await response.json();
+            if (result.status === 200) {
+                alert('Category added successfully!');
+                window.location.reload();
+            } else {
+                alert(`Error: ${result.errorMessage}`);
+            }
+        }
+
+        async function deleteCategory() {
+            const name = document.getElementById('deleteCategoryName').value;
+            const response = await fetch('/api/category/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            });
+            const result = await response.json();
+            if (result.status === 200) {
+                alert('Category deleted successfully!');
+                window.location.reload();
+            } else {
+                alert(`Error: ${result.errorMessage}`);
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>카테고리 관리</h1>
+<div>
+    <h2>카테고리 추가</h2>
+    <input type="text" id="categoryName" placeholder="카테고리명">
+    <button onclick="addCategory()">추가</button>
+</div>
+<div>
+    <h2>카테고리 삭제</h2>
+    <input type="text" id="deleteCategoryName" placeholder="카테고리명">
+    <button onclick="deleteCategory()">삭제</button>
+</div>
+<div>
+    <h2>카테고리 목록</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>카테고리명</th>
+            <th>생성일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category : ${categories}">
+            <td th:text="${category.id}"></td>
+            <td th:text="${category.name}"></td>
+            <td th:text="${#dates.format(
+                #dates.create(
+                    category.addDate.year, category.addDate.monthValue, category.addDate.dayOfMonth,
+                    category.addDate.hour, category.addDate.minute, category.addDate.second)
+                    , 'yyyy-MM-dd HH:mm:ss')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
