@@ -29,8 +29,16 @@
 - **최저가 브랜드 조회**: 단일 브랜드로 모든 카테고리 상품 구매시, 최저가격의 브랜드의 각 카테고리별 상품 가격, 총액을 조회하는 기능.
 - **특정 카테고리 상품 조회**: 특정 카테고리의 최저, 최고 가격 브랜드와 상품 가격을 조회하는 기능.
 
+## 관리용 페이지
+<a href=http://localhost:12012/swagger-ui/index.html>**Swagger API 목록**</a><br>
+<a href=http://localhost:12012/manage/brand/>**Brand 관리 페이지**</a><br>
+<a href=http://localhost:12012/manage/category/>**Category 관리 페이지**</a><br>
+<a href=http://localhost:12012/manage/product/>**Product 관리 페이지**</a><br>
+<a href=http://localhost:12012/manage/product/api>**Product API 관리 페이지**</a><br>
 
 ### API 목록
+<br>
+
 - **Brand API**
   - `POST /api/brands/add`: 새로운 브랜드 추가
   - `PUT /api/brands/update/{id}`: 브랜드 정보 업데이트
@@ -52,6 +60,8 @@
   - `GET /api/product/list/category/{name}`: 특정 카테고리의 최저, 최고 가격 상품 조회
   - `GET /api/product/list/min_price_brand`: 단일 브랜드로 모든 카테고리 상품 구매 시, 최저 가격 브랜드 정보 조회
   - `GET /api/product/list/min_price_category`: 각 카테고리별로 최저가 상품 및 해당 브랜드, 총액 조회
+
+
 
 <br><br>
 ## Error Code 목록
